@@ -46,18 +46,18 @@ function renderBoard() {
   for (let i = 0; i < board.length; i++) {
     const tr = document.createElement('tr')
     for (let j = 0; j < board[i].length; j++) {
-      const td = document.createElement('td')
-      td.id = "cell-"+ i + "-" + j
-      td.textContent = getCell(board, i, j) === EMPTY ? '' : getCell(board, i, j)
-      if (getCell(SAMPLE_BOARD, i, j) === EMPTY && getCell(board, i, j) !== EMPTY) {
+      const td = document.createElement('td') 
+      td.id = "cell-"+ i + "-" + j //makes ids
+      td.textContent = getCell(board, i, j) === EMPTY ? '' : getCell(board, i, j) //
+      if (getCell(SAMPLE_BOARD, i, j) === EMPTY && getCell(board, i, j) !== EMPTY) { // if sample board = empty, and the board != empty, add user inpput
         td.classList.add('user-input')
       }
-      td.addEventListener('click', () => placeAt(i, j))
-      tr.append(td)
+      td.addEventListener('click', () => placeAt(i, j)) 
+      tr.append(td) //appends cell to row
     }
-    boardEl.appendChild(tr) 
+    boardEl.appendChild(tr) //appends child to board
   }
-  highlightConflicts()
+  highlightConflicts() //highlights conflictcs
 }
 
 /**
