@@ -42,6 +42,22 @@ const paletteEl = document.getElementById('palette')
  */
 function renderBoard() {
   // TODO
+  boardEl.innerHTML = ''
+  for (let i = 0; i < board.length; i++) {
+    const tr = document.createElement('tr')
+    for (let j = 0; j < board[i].length; j++) {
+      const td = document.createElement('td')
+      td.id = "cell-"+ i + "-" + j
+      td.textContent = getCell(board, i, j) === EMPTY ? '' : getCell(board, i, j)
+      if (getCell(SAMPLE_BOARD, i, j) === EMPTY && getCell(board, i, j) !== EMPTY) {
+        td.classList.add('user-input')
+      }
+      td.addEventListener('click', () => placeAt(i, j))
+      tr.append(td)
+    }
+    boardEl.appendChild(tr) 
+  }
+  highlightConflicts()
 }
 
 /**
@@ -51,6 +67,12 @@ function renderBoard() {
  */
 function highlightConflicts() {
   // TODO
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[i].length; j++) {
+      const td = document.getElementById("cell-"+ i + "-" + j)
+      td.classList.toggle('error', findConflicts(board, i, j).length > 0)
+    }
+  }
 }
 
 /**
@@ -63,6 +85,22 @@ function highlightConflicts() {
  */
 function renderPalette() {
   // TODO
+  paletteEl.innerHTML = ''
+  const tr = document.createElement('tr')
+  for (let d=1; d < 10; d++) {
+    const td = document.createElement('td')
+    td.textContent = d
+    td.addEventListener('click', () => selectDigit(d))
+    tr.append(td)
+  }
+  const undoTd = document.createElement('td')
+  const undoPic = document.createElement('img')
+  undoPic.src = '/images/undo.png'
+  undoPic.alt = 'Undo'
+  undoTd.addEventListener('click', () => undo())
+  undoTd.append(undoPic)
+  tr.append(undoTd)
+  paletteEl.append(tr)
 }
 
 // ---- interaction ----------------------------------------------------
@@ -73,6 +111,12 @@ function renderPalette() {
  */
 function selectDigit(digit) {
   // TODO
+  activeDigit = digit
+  const cells = paletteEl.querySelectorAll('td')
+  cells.forEach((cell, index) => {
+    cell.classList.toggle('active', index + 1 === digit)
+  })
+
 }
 
 /**
@@ -85,11 +129,24 @@ function selectDigit(digit) {
  */
 function placeAt(row, col) {
   // TODO
+  if (activeDigit !== null && (getCell(SAMPLE_BOARD, row, col) === EMPTY)) {
+    history.push(board)
+    board = setCell(board, row, col, activeDigit)
+    renderBoard()
+    if (isComplete(board) === true) {
+      celebrate()
+    }
+  }
 }
 
 /** Step back one move. TODO: if history isn't empty, pop into `board`, re-render. */
 function undo() {
   // TODO
+  if (history.length > 0) {
+    board = history[history.length-1]
+    history.pop()
+  }
+  renderBoard()
 }
 
 // ---- finishing (done for you) ---------------------------------------
